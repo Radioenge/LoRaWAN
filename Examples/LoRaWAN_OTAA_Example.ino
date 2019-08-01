@@ -20,7 +20,6 @@ void setup() {
 
   /* Initialize SoftwareSerial */
   hSerialCommands = SerialCommandsInit(7, 6, 9600);
-  hSerialCommands->listen();
   
   /* Configure the EndDevice as OTAA */
   //InitializeOTAA(APPKEY, APPEUI);

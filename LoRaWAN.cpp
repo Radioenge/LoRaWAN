@@ -66,6 +66,7 @@ static char g_payload[BUFFER_SIZE];
 
 void SerialFlush(SoftwareSerial* hSerial)
 {
+  if(!hSerial->isListening()) hSerial->listen();
   while(hSerial->available() > 0)
   {
     hSerial->read();
@@ -114,7 +115,9 @@ Status_Typedef ReceivePacketCommand(char* payload, uint8_t* payloadSize, uint32_
   if(payload == NULL) return RAD_ERROR;
   if(payloadSize == NULL) return RAD_ERROR;
   if(hSerialCommand == NULL) return RAD_ERROR;
-  
+
+  if(!hSerialCommand->isListening()) hSerialCommand->listen();
+
   /* Waits for reception */
   while( ((timeout > 0 ) || (i > 0)) && (waitNextByte > 0) )
   {
@@ -153,6 +156,8 @@ Status_Typedef ReceivePacketTransp(char* payload, uint8_t* payloadSize, uint32_t
   if(payload == NULL) return RAD_ERROR;
   if(payloadSize == NULL) return RAD_ERROR;
   if(hSerialTransp == NULL) return RAD_ERROR;
+
+  if(!hSerialTransp->isListening()) hSerialTransp->listen();
   
   /* Waits for reception */
   while( ((timeout > 0 ) || (i > 0)) && (waitNextByte > 0) )
