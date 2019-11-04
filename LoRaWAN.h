@@ -38,6 +38,7 @@ typedef enum
   AT_APPSKEY,
   AT_NWKSKEY,
   AT_APPEUI,
+  AT_DEVEUI,
   AT_ADR,
   AT_TXP,
   AT_DR,
@@ -167,5 +168,17 @@ Status_Typedef SendString(char* string, uint8_t port);
   */
 Status_Typedef SendAtCommand(AT_Commands_e command, CommandType_e command_type, char* payload);
 
+
+
+/**
+  * @brief Initializes the EndDevice as ABP with the given DEVADDR, NWSKEY and APPSKEY
+  * @param p_deveui[in]: array containing the DEVEUI as a string
+  * @param p_appeui[in]: array containing the APPEUI as a string
+  * @param p_devaddr[in]: array containing the DEVADDR as a string
+  * @param p_nwskey[in]: array containing the NWSKEY as a string
+  * @param p_appskey[in]: array containing the APPSKEY as a string
+  * @retval RAD_OK or RAD_ERROR
+  */
+Status_Typedef InitializeABP(char* p_deveui, char* p_appeui, char* p_devaddr, char* p_nwskey, char* p_appskey);
 
 #endif

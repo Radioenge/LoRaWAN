@@ -18,6 +18,7 @@ const char* str_at_commands[]
   "APPSKEY",
   "NWKSKEY",
   "APPEUI",
+  "DEVEUI",
   "ADR",
   "TXP",
   "DR",
@@ -324,4 +325,38 @@ Status_Typedef SendAtCommand(AT_Commands_e command, CommandType_e command_type, 
   /* Sends the message */
   hSerialCommand->write(array, index);
   delay(500);
+}
+
+Status_Typedef InitializeABP(char* p_deveui, char* p_appeui, char* p_devaddr, char* p_nwkskey, char* p_appskey)
+{
+  char char_zero[] = "0";
+  /* Checks the pointers */
+  if((p_deveui == NULL) || (p_appeui == NULL) || (p_devaddr == NULL) || (p_nwkskey == NULL) || (p_appskey == NULL))
+  {
+    return RAD_ERROR;
+  }
+  /* checks the parameters */
+  if((strlen(p_deveui) != 23) || (strlen(p_appeui) != 23) || (strlen(p_devaddr) != 11) || (strlen(p_nwkskey) != 47) || (strlen(p_appskey) != 47))
+  {
+    return RAD_ERROR;
+  }
+  
+  /* Configure Join mode to OTAA */
+  SendAtCommand(AT_NJM, AtSet, char_zero);
+  delay(1000);
+  /* Configure DEVEUI */
+  SendAtCommand(AT_DEVEUI, AtSet, p_deveui);
+  delay(1000);
+  /* Configure APPEUI */
+  SendAtCommand(AT_APPEUI, AtSet, p_appeui);
+  delay(1000);
+  /* Configure DEVADDR */
+  SendAtCommand(AT_DEVADDR, AtSet, p_devaddr);
+  delay(1000);
+  /* Configure NWSKEY */
+  SendAtCommand(AT_NWKSKEY, AtSet, p_nwkskey);
+  delay(1000);
+  /* Configure APPSKEY */
+  SendAtCommand(AT_APPSKEY, AtSet, p_appskey);
+  delay(1000);
 }
