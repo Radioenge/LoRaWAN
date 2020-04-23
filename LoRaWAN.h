@@ -158,6 +158,9 @@ Status_Typedef SendString(char* string, uint8_t port);
 
 
 
+Status_Typedef SendRaw(char* payload);
+
+
 /**
   * @brief Sends an AT command with the specified type and payload
   * @param command : AT command of type AT_Commands_e
