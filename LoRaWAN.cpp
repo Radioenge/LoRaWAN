@@ -238,9 +238,10 @@ Status_Typedef JoinNetwork(uint8_t retries)
   uint16_t remaining_retries = retries;
 
   /* Checks if the EndDevice is already joined */
+  delay(4000);
   while( (IsJoined() != RAD_OK) && ((retries == 0) || (remaining_retries > 0)) )
   {
-    delay(10000);
+//    delay(10000);
     if(remaining_retries)
     {
       remaining_retries--;
@@ -273,6 +274,22 @@ Status_Typedef SendString(char* string, uint8_t port)
   SendAtCommand(AT_SEND, AtSet, g_payload);
 }
 
+
+Status_Typedef SendRaw(char* payload)
+{
+  static const char at_string[] = "ATZ";
+  uint8_t index = 0; //index += sizeof(array);
+   memset(array, 0, BUFFER_SIZE);
+  //strcpy((char*)&array[index], payload);
+ // memcpy(array, at_string, 3);
+ /* Appends the payload */
+ 
+    strcpy((char*)&array[index], payload);
+    index += strlen(payload);
+  
+  hSerialCommand->write(array, index);
+  delay(500);
+}
 
 
 Status_Typedef SendAtCommand(AT_Commands_e command, CommandType_e command_type, char* payload)
