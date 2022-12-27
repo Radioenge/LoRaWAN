@@ -14,7 +14,14 @@ void setup() {
 
   if(LoRa.JoinNetwork(OTAA, AppKey, AppEui, CS, true, true)) 
     LoRa.SendString("teste", 1);
+  
+  LoRa.pinMode(2, OUTPUT);
+  LoRa.digitalWrite(2, 1);
 }
 
 void loop() {
+  LoRa.digitalWrite(2, 0);
+  delay(5000);
+  LoRa.digitalWrite(2, 1);
+  delay(5000);
 }
