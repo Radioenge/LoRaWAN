@@ -112,13 +112,13 @@ class LoRaWAN_Radioenge{
           "AJOIN"
     };
 
-    static char g_payload[BUFFER_SIZE];
-    static uint8_t array[BUFFER_SIZE];
+    char g_payload[BUFFER_SIZE];
+    uint8_t array[BUFFER_SIZE];
     String* payloads = new String[5];  
 
     String feedbackSerial(String val, bool exception = false){
       String buff = "";
-      uint8_t count = 9;
+      uint8_t count = 8;
 
  
       SerialLoRaWAN->println(val);
@@ -140,7 +140,7 @@ class LoRaWAN_Radioenge{
               return "";
             break;
           }
-          else{
+          else{         
             if(buff.indexOf("ERRO") > 0 && count > 0)
               count -= 1;
             else if(count <= 0)
@@ -188,8 +188,13 @@ class LoRaWAN_Radioenge{
       }
     }
 
-    uint16_t GPIO(uint8_t cmd, uint8_t pin){
-      String buff = commandAT(_ADC_, String(pin));   
+    uint16_t GPIO(uint8_t cmd, uint8_t pin, uint8_t val = NULL){
+      String buff = "";
+      
+      if(val != NULL)
+        buff = commandAT(cmd, String(pin) + ":" + String(val));
+      else
+        buff = commandAT(cmd, String(pin));        
       buff.remove(0, 2);   
       buff.replace("AT_OK", "");
       buff.replace("AT_ERROR", String(0xFFFF));
@@ -448,8 +453,8 @@ class LoRaWAN_Radioenge{
       return (uint8_t)GPIO(_RPIN_, pin);   
     }
 
-    uint8_t digitalWrite(uint8_t pin){
-      return (uint8_t)GPIO(_WPIN_, pin);
+    uint8_t digitalWrite(uint8_t pin, uint8_t val){
+      return (uint8_t)GPIO(_WPIN_, pin, val);
     }
     
     uint16_t analogRead(uint8_t pin){
