@@ -211,7 +211,7 @@ class LoRaWAN_Radioenge{
 
     void printParameters(){
       String version = VER();
-
+      
       Serial.println("---------------------------------------------------");
       Serial.println("                  LoRaWAN Radioenge\n");
       Serial.println(" Version        = " + version);
@@ -489,9 +489,9 @@ class LoRaWAN_Radioenge{
       else if((CS == net || TTN == net) && buff_string != "ff0000000000000000020000") CHMASK("ff00:0000:0000:0000:0002:0000");
     }
 
-    bool JoinNetwork(uint8_t njm = NULL, String appkey = "", String appeui = "",  uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL, String deveui = "", String daddr = ""){
+    bool JoinNetwork(uint8_t njm = NULL, String appkey = "", String appeui = "",  uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL, String nwkskey = "", String daddr = ""){
       if(autoconfig)
-        ConfigNetwork(njm, net, appkey, appeui, deveui, daddr);
+        ConfigNetwork(njm, net, appkey, appeui, nwkskey, daddr);
 
       if(automatic != AJOIN()) AJOIN(automatic);
 
