@@ -119,8 +119,8 @@ class LoRaWAN_Radioenge{
     String feedbackSerial(String val, bool exception = false){
       String buff = "";
       uint8_t count = 8;
-
- 
+      uint8_t timerout = 100;
+      
       SerialLoRaWAN->println(val);
       if(feedback)
         Serial.println("TX: " + val);
@@ -146,6 +146,12 @@ class LoRaWAN_Radioenge{
             else if(count <= 0)
               break;
             else if(buff == "AT_JOIN_OK" || buff == "AT_ALREADY_JOINED")
+              break;
+            else if(timerout > 0){
+              --timerout;
+              delay(1);              
+            }
+            else if(timerout <= 0)
               break;
           }
         }
