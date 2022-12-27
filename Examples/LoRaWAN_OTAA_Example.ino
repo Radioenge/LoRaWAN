@@ -1,44 +1,20 @@
-#include <LoRaWAN.h>
+#include "LoRaWAN_Radioenge.h"
+#include "Stream.h"
 
-/* Includes ---------------------- */
-#include <SoftwareSerial.h>
-#include <stdint.h>
+LoRaWAN_Radioenge LoRa(&Serial2);
 
-/* SoftwareSerial handles */
-SoftwareSerial* hSerialCommands = NULL;
-
-char APPKEY[] = "50:d1:ad:39:e5:b3:a6:fc:ff:db:3e:a6:3e:e6:5a:a4";
-char APPEUI[] = "d9:8c:fb:ab:a0:3a:7a:d2";
-char CHMASK[] = "00FF:0000:0000:0000:0001:0000";
-char str_counter[32];
-int counter = 0;
+String AppKey = "50:D1:AD:39:E5:B3:A6:FC:FF:DB:3E:A6:3E:E6:5A:A4";
+String AppEui = "21:47:07:35:5E:D3:A3:A0";
 
 void setup() {
-  Serial.begin(9600); /* Initialize monitor serial */
-  Serial.println("Initializing...");
-  delay(10000);
+  Serial.begin(9600);
+  Serial2.begin(9600);
+  LoRa.begin(true);
+  LoRa.printParameters();
 
-  /* Initialize SoftwareSerial */
-  hSerialCommands = SerialCommandsInit(7, 6, 9600);
-  
-  /* Configure the EndDevice as OTAA */
-  //InitializeOTAA(APPKEY, APPEUI);
-  SendAtCommand(AT_CHMASK, AtSet, CHMASK);
-  Serial.println("Sending JOIN.");
-  if(JoinNetwork(0) == RAD_OK)
-  {
-    Serial.println("EndDevice has joined sucessfully.");
-  }
-  else
-  {
-    Serial.println("Error joining the network.");
-  }
+  if(LoRa.JoinNetwork(OTAA, AppKey, AppEui, CS, true, true)) 
+    LoRa.SendString("teste", 1);
 }
 
 void loop() {
-  /* Sends a string containing a counter every 15s */
-  sprintf(str_counter, "Counter: %d\r\n\0", counter++);
-  Serial.println(str_counter);
-  SendString(str_counter, 2);
-  delay(15000);
 }
