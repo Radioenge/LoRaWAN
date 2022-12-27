@@ -109,7 +109,7 @@ class LoRaWAN_Radioenge{
           "GPIOC",
           "WPIN",
           "RPIN",
-          "AJOIN"
+          "AJOIN"     
     };
 
     char g_payload[BUFFER_SIZE];
@@ -210,13 +210,15 @@ class LoRaWAN_Radioenge{
     }
 
     void printParameters(){
+      String version = VER();
 
       Serial.println("---------------------------------------------------");
       Serial.println("                  LoRaWAN Radioenge\n");
+      Serial.println(" Version        = " + version);
       Serial.println(" DevAddr        = " + _DADDR);
-      Serial.println(" AppEui         = " + _APPKEY);
-      Serial.println(" AppKey         = " + _APPSKEY);
-      Serial.println(" AppSKey        = " + _NWKSKEY);
+      Serial.println(" AppKey         = " + _APPKEY);
+      Serial.println(" AppSKey        = " + _APPSKEY);
+      Serial.println(" NwkSKey        = " + _NWKSKEY);
       Serial.println(" AppEui/JoinEui = " + _APPEUI + "\n");
       Serial.println("                    elcereza.com");
       Serial.println("--------------------------------------------------\n");
@@ -461,17 +463,20 @@ class LoRaWAN_Radioenge{
       return GPIO(_ADC_, pin); 
     }
 
-    void ConfigNetwork(uint8_t njm = NULL, uint8_t net = NULL, String appkey = "", String appeui = ""){
+    void ConfigNetwork(uint8_t njm = NULL, uint8_t net = NULL, String appkey = "", String appeui = "", String nwkskey = "", String daddr = ""){
       if(NJM() != njm) NJM(njm);
       if(njm == OTAA && CLASS()) CLASS(false);
 
-      String buff_appkey = appkey;
-      buff_appkey.replace(":", "");
-      String buff_appeui = appeui;
-      buff_appeui.replace(":", "");
-
-      if(_APPKEY != buff_appkey && buff_appkey != "") APPKEY(appkey);
+      String buff_appkey = appkey;   buff_appkey.replace(":", "");
+      String buff_appeui = appeui;   buff_appeui.replace(":", "");
+      String buff_nwkskey = nwkskey; buff_nwkskey.replace(":", "");
+      String buff_daddr  = daddr;    buff_daddr.replace(":", "");    
+      
+      if(njm == ABP) if(_APPSKEY != buff_appkey && buff_appkey != "") APPSKEY(appkey);
+      else if(_APPKEY != buff_appkey && buff_appkey != "") APPKEY(appkey);
       if(_APPEUI != buff_appeui && buff_appeui != "") APPEUI(appeui);
+      if(_NWKSKEY != buff_nwkskey && buff_nwkskey != "") NWKSKEY(nwkskey);
+      if(_DADDR != buff_daddr && buff_daddr != "") DADDR(daddr);
 
       uint16_t buff_uint16;
       buff_uint16 = RX1DL(); if((CS == net || TTN == net) && buff_uint16 != 1000) RX1DL(1000); else if(EN == net && buff_uint16 != 5000) RX1DL(5000);
@@ -484,9 +489,9 @@ class LoRaWAN_Radioenge{
       else if((CS == net || TTN == net) && buff_string != "ff0000000000000000020000") CHMASK("ff00:0000:0000:0000:0002:0000");
     }
 
-    bool JoinNetwork(uint8_t njm = NULL, String appkey = "", String appeui = "",  uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL){
+    bool JoinNetwork(uint8_t njm = NULL, String appkey = "", String appeui = "",  uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL, String deveui = "", String daddr = ""){
       if(autoconfig)
-        ConfigNetwork(njm, net, appkey, appeui);
+        ConfigNetwork(njm, net, appkey, appeui, deveui, daddr);
 
       if(automatic != AJOIN()) AJOIN(automatic);
 
