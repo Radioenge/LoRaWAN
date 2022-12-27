@@ -188,10 +188,10 @@ class LoRaWAN_Radioenge{
       }
     }
 
-    uint16_t GPIO(uint8_t cmd, uint8_t pin, uint8_t val = NULL){
+    uint16_t GPIO(uint8_t cmd, uint8_t pin, uint8_t val = 2){
       String buff = "";
       
-      if(val != NULL)
+      if(val != 2)
         buff = commandAT(cmd, String(pin) + ":" + String(val));
       else
         buff = commandAT(cmd, String(pin));        
