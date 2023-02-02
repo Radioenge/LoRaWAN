@@ -57,6 +57,7 @@ Esta biblioteca conta com todas as funcionalidades descrita no datasheet como ta
 
 
 <h4>Escrita digital</h4>
+
 ```
   uint8_t digitalWrite(uint8_t pin,          // Pino a ser escrito (qualquer um que esteja configurado como saída)
                        uint8_t val)          // Valor desejado, 0 ou 1
@@ -65,6 +66,7 @@ Esta biblioteca conta com todas as funcionalidades descrita no datasheet como ta
 ```
 
 <h4>Leitura digital</h4>
+
 ```
   uint8_t digitalRead(uint8_t pin)           // Pino a ser lido (qualquer um que esteja configurado como entrada digital)
                       
@@ -72,6 +74,7 @@ Esta biblioteca conta com todas as funcionalidades descrita no datasheet como ta
 ```
 
 <h4>Leitura Analógica</h4>
+
 ```
   uint16_t analogRead(uint8_t pin)           // Pino a ser lido (qualquer um que esteja configurado como entrada ADC)
                       
