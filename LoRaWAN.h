@@ -41,6 +41,7 @@
 #define _WPIN_              35
 #define _RPIN_              36
 #define _AJOIN_             37
+#define _DEUI_              38
 
 #define ABP                 0
 #define OTAA                1
@@ -69,9 +70,10 @@ class LoRaWAN_Radioenge{
            _APPKEY,
            _APPSKEY,
            _NWKSKEY,
-           _APPEUI;
+           _APPEUI,
+           _DEUI;
 
-    String AT_CMD[38] = {
+    String AT_CMD[39] = {
           "ATZ",
           "DADDR",
           "APPKEY",
@@ -109,7 +111,8 @@ class LoRaWAN_Radioenge{
           "GPIOC",
           "WPIN",
           "RPIN",
-          "AJOIN"     
+          "AJOIN",
+          "DEUI"
     };
 
     char g_payload[BUFFER_SIZE];
@@ -185,7 +188,28 @@ class LoRaWAN_Radioenge{
         else
           ++count;
       }
-    }
+    }  
+    
+    String separator(String val){
+      uint8_t val_size = val.length();
+      char val_char[val_size];
+      val.toCharArray(val_char, val_size + 1);
+      
+      if(val_size % 2 == 0 && val.indexOf(":") < 1){
+        val = "";
+        uint8_t count = 0;
+        for(uint8_t i = 0; i < val_size; ++i){
+          
+          val += val_char[i];
+          ++count;
+          if(count >= 2 && i + 1 < val_size){
+            val += ":";
+            count = 0;       
+          }
+        }
+      }
+      return val;
+    } 
 
     uint16_t GPIO(uint8_t cmd, uint8_t pin, uint8_t val = 2){
       String buff = "";
@@ -214,6 +238,7 @@ class LoRaWAN_Radioenge{
       Serial.println("---------------------------------------------------");
       Serial.println("                  LoRaWAN Radioenge\n");
       Serial.println(" Version        = " + version);
+      Serial.println(" DevEui         = " + _DEUI);
       Serial.println(" DevAddr        = " + _DADDR);
       Serial.println(" AppKey         = " + _APPKEY);
       Serial.println(" AppSKey        = " + _APPSKEY);
@@ -226,6 +251,7 @@ class LoRaWAN_Radioenge{
     void begin(bool _feedback = false){
       feedback = _feedback;      
       
+      DEUI();
       DADDR();
       APPKEY();
       APPSKEY();
@@ -234,37 +260,42 @@ class LoRaWAN_Radioenge{
     }
 
     String DADDR(String val = ""){
-      if(val != "") commandAT(_DADDR_, val);
+      if(val != "") commandAT(_DADDR_, separator(val));
       _DADDR = commandAT(_DADDR_);
       return _DADDR;
     }
 
     String APPKEY(String val = ""){
-      if(val != "") commandAT(_APPKEY_, val);
+      if(val != "") commandAT(_APPKEY_, separator(val));
       _APPKEY = commandAT(_APPKEY_);
       return _APPKEY;
     }
 
     String APPSKEY(String val = ""){
-      if(val != "") commandAT(_APPSKEY_, val);
+      if(val != "") commandAT(_APPSKEY_, separator(val));
       _APPSKEY = commandAT(_APPSKEY_);
       return _APPSKEY;
     }
 
     String NWKSKEY(String val = ""){
-      if(val != "") commandAT(_NWKSKEY_, val);
+      if(val != "") commandAT(_NWKSKEY_, separator(val));
       _NWKSKEY = commandAT(_NWKSKEY_);
       return _NWKSKEY;
     }
 
     String APPEUI(String val = ""){
-      if(val != "") commandAT(_APPEUI_, val);
+      if(val != "") commandAT(_APPEUI_, separator(val));
       _APPEUI = commandAT(_APPEUI_);
       return _APPEUI;
     }
 
+    String DEUI(){
+      _DEUI = commandAT(_DEUI_);
+      return _DEUI;
+    }
+
     String CHMASK(String val = ""){
-      if(val != "") commandAT(_CHMASK_, val);
+      if(val != "") commandAT(_CHMASK_, separator(val));
       return commandAT(_CHMASK_);
     }
 
@@ -481,14 +512,14 @@ class LoRaWAN_Radioenge{
       buff_uint16 = RX1DL(); if((CS == net || TTN == net) && buff_uint16 != 1000) RX1DL(1000); else if(EN == net && buff_uint16 != 5000) RX1DL(5000);
       buff_uint16 = RX2DL(); if((CS == net || TTN == net) && buff_uint16 != 2000) RX2DL(2000); else if(EN == net && buff_uint16 != 6000) RX2DL(6000);
       buff_uint16 = JN1DL(); if((CS == net || TTN == net) && buff_uint16 != 5000) JN1DL(5000); else if(EN == net && buff_uint16 != 5000) JN1DL(5000);
-      buff_uint16 = JN2DL(); if((CS == net || TTN == net) && buff_uint16 != 6000) JN2DL(6000); else if(EN == net && buff_uint16 != 6000) JN2DL(6000);
+      buff_uint16 = JN2DL(); if((CS == net || TTN == net) && buff_uint16 != 6000) JN2DL(6000); else if(EN == net && buff_uint16 != 6000) JN2DL(5000);
 
       String buff_string = CHMASK();
       if(net == EN && buff_string != "00ff00000000000000010000") CHMASK("00ff:0000:0000:0000:0001:0000");
       else if((CS == net || TTN == net) && buff_string != "ff0000000000000000020000") CHMASK("ff00:0000:0000:0000:0002:0000");
     }
 
-    bool JoinNetwork(uint8_t njm = NULL, String appkey = "", String appeui = "",  uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL, String nwkskey = "", String daddr = ""){
+    bool JoinNetwork(uint8_t njm = NULL, uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL, String appkey = "", String appeui = "", String nwkskey = "", String daddr = ""){
       if(autoconfig)
         ConfigNetwork(njm, net, appkey, appeui, nwkskey, daddr);
 
