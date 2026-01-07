@@ -12,10 +12,10 @@ void setup() {
   LoRa.begin();
   LoRa.printParameters();
 
-  if(LoRa.JoinNetwork(OTAA, TTN, true, !true)) 
+  if(LoRa.JoinNetwork(OTAA, TTN, true)) 
     LoRa.SendString("elcereza.com", 1);
   
-   LoRa.pinMode(2, RADIOENGE_OUTPUT_PUSH_PULL);
+  LoRa.pinMode(2, RADIOENGE_OUTPUT_PUSH_PULL);
 }
 
 void loop() {

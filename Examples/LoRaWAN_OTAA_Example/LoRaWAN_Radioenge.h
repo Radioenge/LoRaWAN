@@ -340,7 +340,7 @@ class LoRaWAN_Radioenge{
       return commandAT(_ADR_).toInt();
     }
 
-    uint8_t DR(uint8_t val = 14){
+    uint8_t DR(uint8_t val = 5){
       if(val < 14) (uint8_t)commandAT(_DR_, String(val)).toInt();
       return (uint8_t)commandAT(_DR_).toInt();
     }
@@ -402,7 +402,7 @@ class LoRaWAN_Radioenge{
     }
 
     bool JOIN(){
-      if(commandAT(_JOIN_, "", true) == "AT_JOIN_OK")
+      if(commandAT(_JOIN_, "", true) != "AT_JOIN_ERROR")
         return true;
       return false;
     }
@@ -528,9 +528,15 @@ class LoRaWAN_Radioenge{
       String buff_string = CHMASK();
       if(net == EN && buff_string != "00ff00000000000000010000") CHMASK("00ff:0000:0000:0000:0001:0000");
       else if((CS == net || TTN == net) && buff_string != "ff0000000000000000020000") CHMASK("ff00:0000:0000:0000:0002:0000");
+
+      //TTN limita o uso do espectro para Datarates baixos
+      if(net == TTN)
+      {
+        DR(5);
+      }
     }
 
-    bool JoinNetwork(uint8_t njm = NULL, uint8_t net = NULL,  bool autoconfig = true, bool automatic = NULL, String appkey = "", String appeui = "", String nwkskey = "", String daddr = ""){
+    bool JoinNetwork(uint8_t njm = NULL, uint8_t net = NULL,  bool autoconfig = false, bool automatic = false, String appkey = "", String appeui = "", String nwkskey = "", String daddr = ""){
       if(autoconfig)
         ConfigNetwork(njm, net, appkey, appeui, nwkskey, daddr);
 
