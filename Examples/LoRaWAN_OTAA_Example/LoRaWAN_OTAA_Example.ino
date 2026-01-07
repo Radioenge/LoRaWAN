@@ -2,14 +2,14 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial SerialCommand(3, 4);
+SoftwareSerial SerialCommand(7, 6, false);
 LoRaWAN_Radioenge LoRa(&SerialCommand);
 
 void setup() {
   Serial.begin(9600);
   SerialCommand.begin(9600);
-  
-  LoRa.begin(true);
+ 
+  LoRa.begin();
   LoRa.printParameters();
 
   if(LoRa.JoinNetwork(OTAA, TTN, true, !true)) 

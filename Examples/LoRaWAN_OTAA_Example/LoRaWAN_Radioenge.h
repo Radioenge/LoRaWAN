@@ -51,6 +51,12 @@
 #define TTN                 1
 #define EN                  2
 
+//#define DEBUG_SERIAL
+
+#ifdef DEBUG_SERIAL
+#warning "Debug serial ativo - verificar memoria"
+#endif
+
 enum{
   RADIOENGE_INPUT = 0,     
 
@@ -75,19 +81,7 @@ enum{
 
 #define BUFFER_SIZE   256
 
-class LoRaWAN_Radioenge{
-  private:
-    Stream* SerialLoRaWAN;
-
-    bool feedback = false;
-    String _DADDR,
-           _APPKEY,
-           _APPSKEY,
-           _NWKSKEY,
-           _APPEUI,
-           _DEUI;
-
-    String AT_CMD[39] = {
+uint8_t* AT_CMD[] = {
           "ATZ",
           "DADDR",
           "APPKEY",
@@ -129,6 +123,17 @@ class LoRaWAN_Radioenge{
           "DEUI"
     };
 
+class LoRaWAN_Radioenge{
+  private:
+    Stream* SerialLoRaWAN;
+
+    String _DADDR,
+           _APPKEY,
+           _APPSKEY,
+           _NWKSKEY,
+           _APPEUI,
+           _DEUI;
+
     char g_payload[BUFFER_SIZE];
     uint8_t array[BUFFER_SIZE];
     String* payloads = new String[5];  
@@ -138,15 +143,17 @@ class LoRaWAN_Radioenge{
       uint8_t count = 8;
       
       SerialLoRaWAN->println(val);
-      if(feedback)
-        Serial.println("TX: " + val);
+#ifdef DEBUG_SERIAL
+      Serial.println("TX: " + val);
+#endif
 
       while(true){
         if(SerialLoRaWAN->available() > 0){
           buff = SerialLoRaWAN->readString();
 
-          if(feedback)
-            Serial.println("RX: " + buff);
+#ifdef DEBUG_SERIAL
+          Serial.println("RX: " + buff);
+#endif
           
           buff.replace("\n", "");
           buff.replace("\r", "");
@@ -171,13 +178,17 @@ class LoRaWAN_Radioenge{
 
     String commandAT(uint8_t cmd, String val = "", bool exception = false){
       String AT = "AT+";
+      uint8_t* buffer_cmd = AT_CMD[cmd];
       
+      for(uint8_t lk = 0; lk < strlen(AT_CMD[cmd]); lk++)
+      {
+        AT += (char)buffer_cmd[lk];
+      }
+
       if(!exception && val == "")
-        AT = AT + AT_CMD[cmd] + "=?";
-      else if(exception)
-        AT = AT + AT_CMD[cmd];
-      else
-        AT = AT + AT_CMD[cmd] + "=" + val;
+        AT = AT + "=?";
+      else if(!exception)
+        AT = AT + "=" + val;
 
       delay(50);
       return feedbackSerial(AT, exception);
@@ -247,6 +258,7 @@ class LoRaWAN_Radioenge{
     }
 
     void printParameters(){
+#ifdef DEBUG_SERIAL
       String version = VER();
       
       Serial.println("---------------------------------------------------");
@@ -260,11 +272,17 @@ class LoRaWAN_Radioenge{
       Serial.println(" AppEui/JoinEui = " + _APPEUI + "\n");
       Serial.println("                    elcereza.com");
       Serial.println("--------------------------------------------------\n");
+#else
+    Serial.println(_DEUI);
+    Serial.println(_DADDR);
+    Serial.println(_APPKEY);
+    Serial.println(_APPSKEY);
+    Serial.println(_NWKSKEY);
+    Serial.println(_APPEUI);
+#endif
     }
 
-    void begin(bool _feedback = false){
-      feedback = _feedback;      
-      
+    void begin(){
       DEUI();
       DADDR();
       APPKEY();
